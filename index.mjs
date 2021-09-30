@@ -1,32 +1,37 @@
-import { ApiError } from "next/dist/server/api-utils.js";
+export class ApiError extends Error {
+  constructor(statusCode, message) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
 
-const allowedHttpMethod = (allowed, method) => {
+export const allowedHttpMethod = (allowed, method) => {
   if (!Array.isArray(allowed)) allowed = [allowed];
   return allowed.includes(method);
 };
 
-const resolveHandler = (options, req) => {
+export const resolveHandler = (req, options = {}) => {
   let handler;
-  if (!options.handler) {
+  if (options.handler) {
     handler = options.handler;
-    if (!allowedHttpMethod(method, req.method)) {
-      throw new ApiError(405, "Method not allowed");
+    if (!allowedHttpMethod(options.method, req.method)) {
+      throw new ApiError(405, 'Method not allowed');
     }
   } else {
     handler = options[req.method.toLowerCase()];
   }
 
-  if (!handler) throw new ApiError("NextApiHandler: callback not defined!");
+  if (!handler) throw new ApiError('NextApiHandler: callback not defined!');
   return handler;
 };
 
-const send = (data, res) => {
-  if (typeof data === "object") {
-    res.setHeader("content-type", "application/json");
+export const send = (data, res) => {
+  if (typeof data === 'object') {
+    res.setHeader('content-type', 'application/json');
     return res.json(data);
   }
 
-  res.setHeader("Content-Type", "text/plain");
+  res.setHeader('Content-Type', 'text/plain');
   return res.end(String(data));
 };
 
@@ -40,7 +45,7 @@ export default function apiWrapper(options) {
     options
   );
 
-  const handler = resolveHandler(options);
+  const handler = resolveHandler(req, options);
 
   return async (req, res) => {
     try {

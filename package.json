@@ -4,7 +4,7 @@
   "description": "A simple and configurable Next.js API handler wrapper that avoids pointless boilerplate",
   "main": "index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap"
   },
   "keywords": [
     "node",
@@ -21,12 +21,13 @@
     "next": "^11.1.2"
   },
   "devDependencies": {
-    "next": "^11.1.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "ioredis-mock": "^5.6.0",
-    "prettier": "^2.3.2"
+    "mock-req-res": "^1.2.0",
+    "prettier": "^2.3.2",
+    "tap": "^15.0.10"
   }
 }
