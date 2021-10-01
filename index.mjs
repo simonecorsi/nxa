@@ -5,28 +5,14 @@ export class ApiError extends Error {
   }
 }
 
-export const allowedHttpMethod = (allowed, method) => {
-  if (!Array.isArray(allowed)) allowed = [allowed];
-  return allowed.includes(method);
-};
-
 export const resolveHandler = (req, options = {}) => {
-  let handler;
-  if (options.handler) {
-    handler = options.handler;
-    if (!allowedHttpMethod(options.method, req.method)) {
-      throw new ApiError(405, 'Method not allowed');
-    }
-  } else {
-    console.log('options, :>> ', options, req.method.toLowerCase());
-    handler = options[req.method.toLowerCase()];
-  }
-
+  let handler = options.handler || options[req.method.toLowerCase()];
+  console.log('PORCODDI');
   if (!handler) throw new ApiError('NextApiHandler: callback not defined!');
   return handler;
 };
 
-export const send = (data, res) => {
+export const send = (res, data) => {
   if (typeof data === 'object') {
     res.setHeader('Content-Type', 'application/json');
     return res.json(data);
@@ -37,29 +23,27 @@ export const send = (data, res) => {
 };
 
 export default function apiWrapper(options) {
-  const { beforeResponse } = Object.assign(
+  const { beforeResponse, afterResponse, onError } = Object.assign(
     {
       beforeResponse: [],
       afterResponse: [],
-      onError: [],
+      onError: () => {},
     },
     options
   );
-
-  const handler = resolveHandler(req, options);
-
   return async (req, res) => {
     try {
+      const handler = resolveHandler(req, options);
       // beforeResponse hooks
       for (const middle of beforeResponse) {
         const out = await middle(req, res);
-        if (res.writableEnded) return; // handle res.end
-        if (out) return send(out, res);
+        if (res.writableEnded) return; // user called res.end
+        if (out) return send(res, out);
       }
 
       const out = await handler(req, res);
-      if (res.writableEnded) return; // handle res.end
-      if (out) return send(out, res);
+      if (res.writableEnded) return; // user called res.end
+      if (out) return send(res, out);
 
       // afterResponse hooks
       for (const middle of afterResponse) {
@@ -67,10 +51,10 @@ export default function apiWrapper(options) {
       }
     } catch (error) {
       process.stderr.write(`[api-error]: ${error.message}\n${error.stack}\n`);
+      console.log('OKOKOKO---');
       const statusCode = error.statusCode || 500;
-
-      for (const middle of onError) {
-        const out = await middle(req, res, error).catch((error) => {
+      if (typeof onError === 'function') {
+        const out = await onError(req, res, error).catch((error) => {
           return (
             res.writableEnded &&
             res.json({
@@ -80,10 +64,12 @@ export default function apiWrapper(options) {
           );
         });
         if (res.writableEnded) return; // handle res.end
-        if (out) return send(out, res);
+        if (out) return send(res, out);
       }
 
+      console.log('OKOKOKO');
       if (!res.writableEnded) {
+        console.log('OKOKOKO1');
         // handler outgoing client throws
         res.status(error?.response?.statusCode || statusCode);
         return res.json({
