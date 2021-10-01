@@ -1,0 +1,6 @@
+coverage: true
+node-arg: [
+  "--no-warnings",
+  "--experimental-loader",
+  "@istanbuljs/esm-loader-hook"
+]

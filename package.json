@@ -4,7 +4,8 @@
   "description": "A simple and configurable Next.js API handler wrapper that avoids pointless boilerplate",
   "main": "index.mjs",
   "scripts": {
-    "test": "tap"
+    "test": "tap",
+    "posttest": "tap --coverage-report=lcov"
   },
   "keywords": [
     "node",
@@ -21,6 +22,7 @@
     "next": "^11.1.2"
   },
   "devDependencies": {
+    "@istanbuljs/esm-loader-hook": "^0.1.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",

@@ -18,6 +18,7 @@ export const resolveHandler = (req, options = {}) => {
       throw new ApiError(405, 'Method not allowed');
     }
   } else {
+    console.log('options, :>> ', options, req.method.toLowerCase());
     handler = options[req.method.toLowerCase()];
   }
 
@@ -27,7 +28,7 @@ export const resolveHandler = (req, options = {}) => {
 
 export const send = (data, res) => {
   if (typeof data === 'object') {
-    res.setHeader('content-type', 'application/json');
+    res.setHeader('Content-Type', 'application/json');
     return res.json(data);
   }
 
