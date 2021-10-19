@@ -1,79 +1,135 @@
-import { mockRequest, mockResponse } from 'mock-req-res';
+import { mockResponse } from 'mock-req-res';
 import tap from 'tap';
-import { resolveHandler, send, default as Middlenext } from '../index.mjs';
+import { send, default as Middlenext } from '../index.mjs';
 import { getServer, closeServer } from './fixtures/server.mjs';
 import request from './fixtures/http.mjs';
+import sinon from 'sinon';
 
-// tap.test('resolveHandler', (t) => {
-//   const req = mockRequest();
-//   const h = () => {};
-//   t.throws(() => resolveHandler(req));
-//   t.equal(resolveHandler(req, { handler: h }), h);
+tap.test('send', (t) => {
+  const res = mockResponse();
+  res.json = sinon.spy();
+  send(res, { hello: 'world' });
+  t.ok(res.json.calledWith({ hello: 'world' }));
+  res.end = sinon.spy();
+  send(res, 'Hello world');
+  t.ok(res.end.calledWith('Hello world'));
+  t.end();
+});
 
-//   t.equal(resolveHandler(req, { get: h }), h);
+tap.test('Middlenext should throw without an handler', (t) => {
+  t.throws(() => Middlenext());
+  t.end();
+});
 
-//   req.method = 'POST';
-//   t.equal(resolveHandler(req, { post: h }), h);
-
-//   req.method = 'PUT';
-//   t.equal(resolveHandler(req, { put: h }), h);
-
-//   req.method = 'DELETE';
-//   t.equal(resolveHandler(req, { delete: h }), h);
-
-//   t.throws(() => resolveHandler(req, { patch: h }));
-
-//   t.end();
-// });
-
-// tap.test('send', (t) => {
-//   const res = mockResponse();
-//   send({ ok: 1 }, res);
-//   t.ok(res.json.called);
-//   t.ok(res.setHeader.calledWith('Content-Type', 'application/json'));
-
-//   const res2 = mockResponse();
-//   send('ok', res2);
-//   t.ok(res2.end.called);
-//   t.ok(res2.setHeader.calledWith('Content-Type', 'text/plain'));
-
-//   t.end();
-// });
-
-tap.test('Middlenext txt return', async (t) => {
+tap.test('Middlenext text return', async (t) => {
   const server = await getServer(
     Middlenext({
       get: () => 'OK',
-      onError: t.fail,
     })
   );
-  t.teardown(() => closeServer(server));
   const url = `http://localhost:${server.address().port}`;
   const response = await request(url);
   t.equal(response, 'OK');
+  closeServer(server, t.end);
+});
+
+tap.test('Middlenext middlewares', async (t) => {
+  const afterResponse = sinon.spy();
+  const beforeResponse = sinon.spy();
+  const server = await getServer(
+    Middlenext({
+      handler: () => 'handler',
+      beforeResponse: [beforeResponse],
+      afterResponse: [afterResponse],
+    })
+  );
+  const url = `http://localhost:${server.address().port}`;
+  await request(url);
+  t.ok(beforeResponse.calledOnce);
+  t.ok(afterResponse.calledOnce);
+  t.teardown(() => closeServer(server));
   t.end();
 });
 
-tap.test('Middlenext throws if no handler provided', async (t) => {
-  const server = await getServer(Middlenext({}));
+tap.test('Middlenext should handler error', async (t) => {
+  const server = await getServer(
+    Middlenext({
+      get: () => {
+        throw new Error('error');
+      },
+    })
+  );
+  const url = `http://localhost:${server.address().port}`;
+  const response = await request(url);
+  t.equal(
+    response,
+    '{"statusCode":500,"message":"res.status is not a function"}'
+  );
   t.teardown(() => closeServer(server));
+  t.end();
+});
+
+tap.test('Middlenext custom error handler', async (t) => {
+  const server = await getServer(
+    Middlenext({
+      get: () => {
+        throw new Error('error');
+      },
+      onError: (req, res, err) => {
+        res.end('{message:"I\'m a teapot"}');
+      },
+    })
+  );
+  const url = `http://localhost:${server.address().port}`;
+  const response = await request(url);
+  t.equal(response, '{message:"I\'m a teapot"}');
+  t.teardown(() => closeServer(server));
+  t.end();
+});
+
+tap.test('Middlenext beforeResponse', async (t) => {
+  const server = await getServer(
+    Middlenext({
+      handler: () => 'handler',
+      beforeResponse: [() => 'OK'],
+    })
+  );
+  const url = `http://localhost:${server.address().port}`;
+  const r = await request(url);
+  t.equal(r, 'OK');
+  t.teardown(() => closeServer(server));
+  t.end();
+});
+
+tap.test('Middlenext error handler return', async (t) => {
+  const server = await getServer(
+    Middlenext({
+      get: () => {
+        throw new Error('error');
+      },
+      onError: () => 'OKOK',
+    })
+  );
   const url = `http://localhost:${server.address().port}`;
   const response = await request(url);
   console.log('response :>> ', response);
-  t.equal(response, 'OK');
+  t.equal(response, 'OKOK');
+  t.teardown(() => closeServer(server));
   t.end();
 });
 
-// tap.test('Middlenext beforeResponse', async (t) => {
-//   const server = await getServer(
-//     Middlenext({
-//       beforeResponse: [() => 'OK'],
-//       onError: t.fail,
-//     })
-//   );
-//   t.teardown(() => closeServer(server));
-//   const url = `http://localhost:${server.address().port}`;
-//   const response = await request(url);
-//   t.equal(response, 'OK');
-//   t.end();
-// });
+tap.test('Middlenext error async handler return', async (t) => {
+  const server = await getServer(
+    Middlenext({
+      get: () => {
+        throw new Error('error');
+      },
+      onError: async () => 'OKOK',
+    })
+  );
+  const url = `http://localhost:${server.address().port}`;
+  const response = await request(url);
+  t.equal(response, 'OKOK');
+  t.teardown(() => closeServer(server));
+  t.end();
+});

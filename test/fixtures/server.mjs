@@ -1,6 +1,6 @@
 import http from 'http';
 
-export const getServer = async (handler) => {
+export const getServer = (handler) => {
   return new Promise((resolve) => {
     const server = http.createServer(handler);
     server.unref();

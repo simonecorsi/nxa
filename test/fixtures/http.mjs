@@ -9,9 +9,7 @@ export default (url) =>
         res.on('data', (c) => {
           data += c;
         });
-        res.on('end', () => {
-          return resolve(data);
-        });
+        res.on('end', () => resolve(data));
       })
       .end();
   });

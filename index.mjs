@@ -5,12 +5,14 @@ export class ApiError extends Error {
   }
 }
 
-export const resolveHandler = (req, options = {}) => {
-  let handler = options.handler || options[req.method.toLowerCase()];
-  console.log('PORCODDI');
-  if (!handler) throw new ApiError('NextApiHandler: callback not defined!');
-  return handler;
-};
+export const SUPPORTED_METHODS = [
+  'HEAD',
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+];
 
 export const send = (res, data) => {
   if (typeof data === 'object') {
@@ -22,60 +24,98 @@ export const send = (res, data) => {
   return res.end(String(data));
 };
 
+export function canSend(res, data) {
+  return Boolean(data && !res.writableEnded);
+}
+
+export async function onErrorHandler(req, res, error) {
+  process.stderr.write(`[api-error]: ${error.message}\n${error.stack}\n`);
+  const statusCode = error.statusCode || 500;
+  // handle generic errors
+  if (!res.writableEnded) {
+    res.status(error?.response?.statusCode || statusCode);
+    return res.end(
+      JSON.stringify({
+        statusCode: statusCode,
+        message: error.message,
+      })
+    );
+  }
+}
+
+const isAsyncFunction = (fn) => {
+  if (typeof fn !== 'function') return false;
+  return fn[Symbol.toStringTag] === 'AsyncFunction';
+};
+
 export default function apiWrapper(options) {
   const { beforeResponse, afterResponse, onError } = Object.assign(
     {
       beforeResponse: [],
       afterResponse: [],
-      onError: () => {},
+      onError: onErrorHandler,
     },
     options
   );
+
+  const handlers = {};
+
+  if (options.handler) {
+    handlers.default = options.handler;
+  } else {
+    for (const [key, v] of Object.entries(options)) {
+      if (
+        SUPPORTED_METHODS.includes(key.toUpperCase()) &&
+        typeof v === 'function'
+      ) {
+        handlers[key] = v;
+      }
+    }
+  }
+
+  if (!Object.keys(handlers).length) {
+    throw new ApiError('NextApiHandler: callback not defined!');
+  }
+
   return async (req, res) => {
     try {
-      const handler = resolveHandler(req, options);
+      const handler = handlers.default || handlers[req.method.toLowerCase()];
+
       // beforeResponse hooks
-      for (const middle of beforeResponse) {
-        const out = await middle(req, res);
-        if (res.writableEnded) return; // user called res.end
-        if (out) return send(res, out);
+      for (const fn of beforeResponse) {
+        const out = await fn(req, res);
+        if (canSend(res, out)) send(res, out);
       }
 
-      const out = await handler(req, res);
-      if (res.writableEnded) return; // user called res.end
-      if (out) return send(res, out);
+      if (!res.writableEnded) {
+        const out = await handler(req, res);
+        if (canSend(res, out)) send(res, out);
+      }
 
       // afterResponse hooks
-      for (const middle of afterResponse) {
-        await middle(req, res);
+      for (const fn of afterResponse) {
+        await fn(req, res);
       }
     } catch (error) {
-      process.stderr.write(`[api-error]: ${error.message}\n${error.stack}\n`);
-      console.log('OKOKOKO---');
-      const statusCode = error.statusCode || 500;
-      if (typeof onError === 'function') {
-        const out = await onError(req, res, error).catch((error) => {
-          return (
-            res.writableEnded &&
-            res.json({
-              statusCode: 500,
-              message: error.message,
-            })
+      if (isAsyncFunction(onError)) {
+        onError(req, res, error)
+          .then((out) => {
+            if (canSend(res, out)) send(res, out);
+          })
+          .catch(
+            // handler syntax errors for better debugging
+            (error) =>
+              !res.writableEnded &&
+              res.end(
+                JSON.stringify({
+                  statusCode: 500,
+                  message: error.message,
+                })
+              )
           );
-        });
-        if (res.writableEnded) return; // handle res.end
-        if (out) return send(res, out);
-      }
-
-      console.log('OKOKOKO');
-      if (!res.writableEnded) {
-        console.log('OKOKOKO1');
-        // handler outgoing client throws
-        res.status(error?.response?.statusCode || statusCode);
-        return res.json({
-          statusCode: statusCode,
-          message: error.message,
-        });
+      } else {
+        const out = onError(req, res, error);
+        if (canSend(res, out)) send(res, out);
       }
     }
   };
