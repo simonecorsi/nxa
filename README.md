@@ -16,9 +16,11 @@
 
 ## About The Project
 
-The purpose of this package is to help me prototype faster without wasting time writing countless boilerplate to Next.js api handlers! 
-Comes with support for hooks (beforeResponse, afterResponse, onError) to help you validate, check authentication and whatever you need!
-You can also use conventience method to have a single file handling multiple http methods thus allowing you to write RESTful routes easily!
+The purpose of this package is to help me prototype faster without wasting time writing countless boilerplate for Next.js api handlers.
+
+Comes with support for hooks (beforeResponse, afterResponse, onError) to help you validate, check authentication and whatever you need.
+
+You can also use conventience method to have a single file handling multiple http methods thus allowing you to write RESTful routes easily.
 
 <!-- GETTING STARTED -->
 
