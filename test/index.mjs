@@ -41,7 +41,7 @@ tap.test('Middlenext middlewares', async (t) => {
     Middlenext({
       handler: () => 'handler',
       beforeResponse: [beforeResponse],
-      afterResponse: [afterResponse],
+      afterResponse: afterResponse,
     })
   );
   const url = `http://localhost:${server.address().port}`;
@@ -113,7 +113,6 @@ tap.test('Middlenext error handler return', async (t) => {
   );
   const url = `http://localhost:${server.address().port}`;
   const response = await request(url);
-  console.log('response :>> ', response);
   t.equal(response, 'OKOK');
   t.teardown(() => closeServer(server));
   t.end();

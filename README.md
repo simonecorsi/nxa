@@ -8,6 +8,8 @@
   - [About The Project](#about-the-project)
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Options](#options)
+    - [`Middlenext(options): AsyncFunction`](#middlenextoptions-asyncfunction)
   - [Contributing](#contributing)
   - [License](#license)
   - [Contact](#contact)
@@ -50,14 +52,15 @@ export default middlenext({
     // handler error and return
     return { message: "youwhatbro" }
   }
+  // Executed serially in order
   beforeResponse: [validate, checkJwt, (req, res) =>{
     // exit before method handlers or just return empty to follow
     return "OK"
     
   }],
-  afterResponse: [(req, res) => {
+  afterResponse: (req, res) => {
     // send some metrics?
-  }]
+  }
 })
 ```
 
@@ -72,6 +75,19 @@ export default middlenext({
   }
 })
 ```
+
+## Options
+
+### `Middlenext(options): AsyncFunction`
+
+| field | description |
+| --- | --- |
+| `handler`| Universal handler for all request on the file | 
+| `{head,get,post,put,patch,delete}` | Convenience method to route http methods | 
+| `beforeResponse` | Array of functions to execute before handling response | 
+| `afterResponse` | function to execute on response finish | 
+| `onError` | function called when there is an error in an handler | 
+
 
 <!-- CONTRIBUTING -->
 

@@ -11,7 +11,7 @@ export default function apiWrapper(options) {
   const { beforeResponse, afterResponse, onError } = Object.assign(
     {
       beforeResponse: [],
-      afterResponse: [],
+      afterResponse: () => {},
       onError: onErrorHandler,
     },
     options
@@ -51,10 +51,16 @@ export default function apiWrapper(options) {
         if (canSend(res, out)) sendResponse(res, out);
       }
 
-      // afterResponse hooks
-      for (const fn of afterResponse) {
-        await fn(req, res);
-      }
+      res.on('finish', () => {
+        // afterResponse hooks
+        if (typeof afterResponse === 'function') {
+          if (isAsyncFunction(afterResponse)) {
+            afterResponse(req, res).catch(console.error);
+          } else {
+            afterResponse(req, res);
+          }
+        }
+      });
     } catch (error) {
       if (isAsyncFunction(onError)) {
         onError(req, res, error)
