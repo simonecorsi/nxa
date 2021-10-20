@@ -1,17 +1,18 @@
 import { mockResponse } from 'mock-req-res';
 import tap from 'tap';
-import { send, default as Middlenext } from '../index.mjs';
+import Middlenext from '../index.mjs';
+import { sendResponse } from '../lib/utils.mjs';
 import { getServer, closeServer } from './fixtures/server.mjs';
 import request from './fixtures/http.mjs';
 import sinon from 'sinon';
 
-tap.test('send', (t) => {
+tap.test('sendResponse', (t) => {
   const res = mockResponse();
   res.json = sinon.spy();
-  send(res, { hello: 'world' });
+  sendResponse(res, { hello: 'world' });
   t.ok(res.json.calledWith({ hello: 'world' }));
   res.end = sinon.spy();
-  send(res, 'Hello world');
+  sendResponse(res, 'Hello world');
   t.ok(res.end.calledWith('Hello world'));
   t.end();
 });
