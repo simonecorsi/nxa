@@ -1,8 +1,9 @@
 {
   "name": "nxa",
   "version": "1.0.0-0",
-  "description": "A simple and configurable Next.js API handler wrapper that avoids pointless boilerplate",
-  "main": "index.mjs",
+  "description": "Minimalistc, zero dependencies and configurable Next.js API handler with hook support that avoids pointless boilerplate",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "tap --ts",
@@ -20,9 +21,6 @@
   ],
   "author": "Simone Corsi",
   "license": "MIT",
-  "peerDependencies": {
-    "next": "^11.1.2"
-  },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
@@ -38,7 +36,6 @@
     "lint-staged": "^11.2.0",
     "markdown-toc": "^1.2.0",
     "mock-req-res": "^1.2.0",
-    "next": "^11.1.2",
     "nyc": "^15.1.0",
     "prettier": "^2.3.2",
     "sinon": "^11.1.2",

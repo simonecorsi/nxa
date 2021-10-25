@@ -4,8 +4,7 @@
     "esModuleInterop": true,
     "module": "commonjs",
     "outDir": "dist",
-    "declaration": true,
-    "declarationDir": "types/"
+    "declaration": true
   },
   "exclude": ["test"],
   "include": ["src"]

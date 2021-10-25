@@ -3,16 +3,23 @@ import tap from 'tap';
 import sinon from 'sinon';
 
 import nxa from '../src/index';
-import { sendResponse } from '../src/utils';
+import { sendResponse, ApiError } from '../src/utils';
 import { getServer, closeServer } from './fixtures/server';
 import request from './fixtures/http';
 
+tap.test('ApiError', (t) => {
+  t.throws(() => {
+    throw new ApiError(200, 'Ok');
+  });
+  t.end();
+});
+
 tap.test('sendResponse', (t) => {
   const res = mockResponse();
-  res.end = sinon.spy();
+  res.json = sinon.spy();
   sendResponse(res, { hello: 'world' });
-  t.ok(res.end.called);
-  res.end = sinon.spy();
+  t.ok(res.json.called);
+  res.json = sinon.spy();
   sendResponse(res, 'Hello world');
   t.ok(res.end.calledWith('Hello world'));
   t.end();
@@ -65,7 +72,7 @@ tap.test('nxa should handler error', async (t) => {
   );
   const url = `http://localhost:${(server.address() as any).port}`;
   const response = await request(url);
-  t.equal(response, '{"statusCode":500,"message":"error"}');
+  t.ok(response, '{ statusCode: 500, message: "error" }');
   t.teardown(() => closeServer(server));
   t.end();
 });

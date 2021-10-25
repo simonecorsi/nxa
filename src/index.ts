@@ -1,29 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { ApiError } from 'next/dist/server/api-utils';
-import {
-  SUPPORTED_METHODS,
-  sendResponse,
-  canSend,
-  onErrorHandler,
-} from './utils';
-
-export type Handler = (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  error?: Error
-) => any;
-
-export type NamedHandlers = {
-  [key in SUPPORTED_METHODS | 'all']?: Handler;
-};
-
-export type nxaOptions = {
-  beforeResponse?: Array<Handler>;
-  afterResponse?: Handler;
-  onError?: Handler;
-} & NamedHandlers;
-
-export interface naxOptions extends NamedHandlers {}
+import { ApiError } from './utils';
+import { NamedHandlers, nxaOptions, SUPPORTED_METHODS } from './types';
+import { sendResponse, canSend, onErrorHandler } from './utils';
 
 export default function nxa(options: nxaOptions) {
   const { beforeResponse, afterResponse, onError } = Object.assign(
@@ -99,12 +76,10 @@ export default function nxa(options: nxaOptions) {
             // handler syntax errors for better debugging
             (error: Error) =>
               !res.writableEnded &&
-              res.end(
-                JSON.stringify({
-                  statusCode: 500,
-                  message: error.message,
-                })
-              )
+              res.json({
+                statusCode: 500,
+                message: error.message,
+              })
           );
       } else {
         if (canSend(res, result)) sendResponse(res, result);
