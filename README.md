@@ -42,22 +42,28 @@ npm i nxa
 ```javascript
 // pages/api/users/index.js
 const nxa = require("nxa");
+
 export default nxa({
   get(req, res) {
     return res.json({ ok: 1 })
     
   },
+
   // if {get,post,put,patch,delete} named method found it will be routed here
   put(req, res) {
     // convenience use res.json setting content-type
     return { ok: 1 }
   },
+  
   // if handler method found it will be used for every request
   handler: (req, res) => res.end("OK"),
+
+  // catch-all errors in your handlers
   onError(req,res,error) {
     // handler error and return
     return { message: "youwhatbro" }
   },
+
   // Executed serially in order
   beforeResponse: [
     validate,
@@ -67,6 +73,8 @@ export default nxa({
     return "OK"
     
   }],
+
+  // Fires when res emits "finish" event
   afterResponse: (req, res) => {
     // send some metrics?
   }
