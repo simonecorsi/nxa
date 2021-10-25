@@ -1,5 +1,5 @@
-node-arg: [
-  "--no-warnings",
-  "--experimental-loader",
-  "@istanbuljs/esm-loader-hook"
-]
+branches: 80
+functions: 80
+lines: 80
+statements: 80
+ts: true
