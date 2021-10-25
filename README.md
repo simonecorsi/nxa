@@ -5,14 +5,27 @@
 <h1 align="center">NxA</h1>
 <p align="center">Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate 🦄</p>
 
-## About The Project
+
+<!-- toc -->
+
+- [About](#about)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+  - [`nxa(options): AsyncFunction`](#nxaoptions-asyncfunction)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+<!-- tocstop -->
+
+## About
 
 The purpose of this package is to help me prototype faster without wasting time writing countless boilerplate for Next.js api handlers.
 
 Comes with support for hooks (beforeResponse, afterResponse, onError) to help you validate, check authentication and whatever you need.
 
 You can also use conventience method to have a single file handling multiple http methods thus allowing you to write RESTful routes easily.
-
 
 <!-- GETTING STARTED -->
 
