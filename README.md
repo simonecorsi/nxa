@@ -39,7 +39,7 @@ npm i nxa
 
 ## Usage
 
-```js
+```javascript
 // pages/api/users/index.js
 const nxa = require("nxa");
 export default nxa({
@@ -47,16 +47,22 @@ export default nxa({
     return res.json({ ok: 1 })
     
   },
+  // if {get,post,put,patch,delete} named method found it will be routed here
   put(req, res) {
     // convenience use res.json setting content-type
     return { ok: 1 }
-  }
+  },
+  // if handler method found it will be used for every request
+  handler: (req, res) => res.end("OK"),
   onError(req,res,error) {
     // handler error and return
     return { message: "youwhatbro" }
-  }
+  },
   // Executed serially in order
-  beforeResponse: [validate, checkJwt, (req, res) =>{
+  beforeResponse: [
+    validate,
+    checkJwt,
+    (req, res) =>{
     // exit before method handlers or just return empty to follow
     return "OK"
     
