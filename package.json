@@ -1,5 +1,5 @@
 {
-  "name": "middlenext",
+  "name": "nxa",
   "version": "1.0.0-0",
   "description": "A simple and configurable Next.js API handler wrapper that avoids pointless boilerplate",
   "main": "index.mjs",

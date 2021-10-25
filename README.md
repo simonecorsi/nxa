@@ -1,15 +1,15 @@
-# middlenext
+# nxa
 
 > Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate
 
 <!-- toc -->
 
-- [middlenext](#middlenext)
+- [nxa](#nxa)
   - [About The Project](#about-the-project)
   - [Installation](#installation)
   - [Usage](#usage)
   - [Options](#options)
-    - [`Middlenext(options): AsyncFunction`](#middlenextoptions-asyncfunction)
+    - [`Middlenext(options): AsyncFunction`](#nxaoptions-asyncfunction)
   - [Contributing](#contributing)
   - [License](#license)
   - [Contact](#contact)
@@ -29,7 +29,7 @@ You can also use conventience method to have a single file handling multiple htt
 ## Installation
 
 ```sh
-npm i middlenext
+npm i nxa
 ```
 
 <!-- USAGE EXAMPLES -->
@@ -38,8 +38,8 @@ npm i middlenext
 
 ```js
 // pages/api/users/index.js
-const middlenext = require("middlenext");
-export default middlenext({
+const nxa = require("nxa");
+export default nxa({
   get(req, res) {
     return res.json({ ok: 1 })
     
@@ -64,12 +64,12 @@ export default middlenext({
 })
 ```
 
-If you don't want middlenext to route methods to named functions you can use a generic `handler` and check method on your own
+If you don't want nxa to route methods to named functions you can use a generic `handler` and check method on your own
 
 ```js
 // pages/api/users/index.js
-const middlenext = require("middlenext");
-export default middlenext({
+const nxa = require("nxa");
+export default nxa({
   handler(req, res) {
     if (req.method === 'GET') // Do what you need
   }
