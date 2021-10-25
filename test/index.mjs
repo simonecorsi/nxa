@@ -1,6 +1,6 @@
 import { mockResponse } from 'mock-req-res';
 import tap from 'tap';
-import Middlenext from '../index.mjs';
+import nxa from '../index.mjs';
 import { sendResponse } from '../lib/utils.mjs';
 import { getServer, closeServer } from './fixtures/server.mjs';
 import request from './fixtures/http.mjs';
@@ -17,14 +17,14 @@ tap.test('sendResponse', (t) => {
   t.end();
 });
 
-tap.test('Middlenext should throw without an handler', (t) => {
-  t.throws(() => Middlenext());
+tap.test('nxa should throw without an handler', (t) => {
+  t.throws(() => nxa());
   t.end();
 });
 
-tap.test('Middlenext text return', async (t) => {
+tap.test('nxa text return', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       get: () => 'OK',
     })
   );
@@ -34,11 +34,11 @@ tap.test('Middlenext text return', async (t) => {
   closeServer(server, t.end);
 });
 
-tap.test('Middlenext middlewares', async (t) => {
+tap.test('nxa middlewares', async (t) => {
   const afterResponse = sinon.spy();
   const beforeResponse = sinon.spy();
   const server = await getServer(
-    Middlenext({
+    nxa({
       handler: () => 'handler',
       beforeResponse: [beforeResponse],
       afterResponse: afterResponse,
@@ -52,9 +52,9 @@ tap.test('Middlenext middlewares', async (t) => {
   t.end();
 });
 
-tap.test('Middlenext should handler error', async (t) => {
+tap.test('nxa should handler error', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       get: () => {
         throw new Error('error');
       },
@@ -70,9 +70,9 @@ tap.test('Middlenext should handler error', async (t) => {
   t.end();
 });
 
-tap.test('Middlenext custom error handler', async (t) => {
+tap.test('nxa custom error handler', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       get: () => {
         throw new Error('error');
       },
@@ -88,9 +88,9 @@ tap.test('Middlenext custom error handler', async (t) => {
   t.end();
 });
 
-tap.test('Middlenext beforeResponse', async (t) => {
+tap.test('nxa beforeResponse', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       handler: () => 'handler',
       beforeResponse: [() => 'OK'],
     })
@@ -102,9 +102,9 @@ tap.test('Middlenext beforeResponse', async (t) => {
   t.end();
 });
 
-tap.test('Middlenext error handler return', async (t) => {
+tap.test('nxa error handler return', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       get: () => {
         throw new Error('error');
       },
@@ -118,9 +118,9 @@ tap.test('Middlenext error handler return', async (t) => {
   t.end();
 });
 
-tap.test('Middlenext error async handler return', async (t) => {
+tap.test('nxa error async handler return', async (t) => {
   const server = await getServer(
-    Middlenext({
+    nxa({
       get: () => {
         throw new Error('error');
       },

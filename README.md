@@ -1,20 +1,9 @@
-# nxa
+<p align="center">
+    <img src="./logo.png" alt="NxA" width="200px"/>
+</p>
 
-> Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate
-
-<!-- toc -->
-
-- [nxa](#nxa)
-  - [About The Project](#about-the-project)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Options](#options)
-    - [`Middlenext(options): AsyncFunction`](#nxaoptions-asyncfunction)
-  - [Contributing](#contributing)
-  - [License](#license)
-  - [Contact](#contact)
-
-<!-- tocstop -->
+<h1 align="center">NxA</h1>
+<p align="center">Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate 🦄</p>
 
 ## About The Project
 
@@ -23,6 +12,7 @@ The purpose of this package is to help me prototype faster without wasting time 
 Comes with support for hooks (beforeResponse, afterResponse, onError) to help you validate, check authentication and whatever you need.
 
 You can also use conventience method to have a single file handling multiple http methods thus allowing you to write RESTful routes easily.
+
 
 <!-- GETTING STARTED -->
 
@@ -78,7 +68,7 @@ export default nxa({
 
 ## Options
 
-### `Middlenext(options): AsyncFunction`
+### `nxa(options): AsyncFunction`
 
 | field | description |
 | --- | --- |
