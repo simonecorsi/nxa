@@ -44,20 +44,20 @@ npm i nxa
 const nxa = require("nxa");
 
 export default nxa({
+  // if handler method found it will be used for every request
+  handler: (req, res) => res.end("OK"),
+
+  // if {get,post,put,patch,delete} named method found it will be routed here
   get(req, res) {
     return res.json({ ok: 1 })
     
   },
 
-  // if {get,post,put,patch,delete} named method found it will be routed here
   put(req, res) {
-    // convenience use res.json setting content-type
+    // convenience use res.json under the hood and sets content-type to json
     return { ok: 1 }
   },
   
-  // if handler method found it will be used for every request
-  handler: (req, res) => res.end("OK"),
-
   // catch-all errors in your handlers
   onError(req,res,error) {
     // handler error and return
