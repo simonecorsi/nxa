@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/simonecorsi/nxa/develop/logo.png?token=ABK3OLF54K2ARFCQWOHEC23BPAENY" alt="NxA" width="150px"/>
+    <img src="https://cdn.githubraw.com/simonecorsi/nxa/master/logo.png" alt="NxA" width="150px"/>
 </p>
 
 <h1 align="center">NxA</h1>
