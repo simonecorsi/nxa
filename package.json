@@ -11,6 +11,8 @@
     "prepare": "node ./prepare.js || echo 'skipping prepare'"
   },
   "keywords": [
+    "javascript",
+    "typescript",
     "node",
     "npm",
     "Next.js",
