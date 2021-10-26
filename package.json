@@ -48,6 +48,7 @@
     "mock-req-res": "^1.2.0",
     "nyc": "^15.1.0",
     "prettier": "^2.3.2",
+    "semantic-release": "^18.0.0",
     "sinon": "^11.1.2",
     "standard-version": "^8.0.1",
     "tap": "^15.0.10",
