@@ -77,7 +77,7 @@ export type Handler = (
 ) => any;
 
 export type NamedHandlers = {
-  [key in SUPPORTED_METHODS | 'all']?: Handler;
+  [key in SUPPORTED_METHODS | 'controller']?: Handler;
 };
 
 export type nxaOptions = {

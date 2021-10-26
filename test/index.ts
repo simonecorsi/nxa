@@ -30,6 +30,21 @@ tap.test('nxa should throw without an handler', (t) => {
   t.end();
 });
 
+tap.test('nxa throw 405 method not allowed', async (t) => {
+  const server = await getServer(
+    nxa({
+      post: () => 'OK',
+    })
+  );
+  const url = `http://localhost:${(server.address() as any).port}`;
+  const response = await request(url);
+  const out = JSON.parse(response as string);
+  t.equal(out.statusCode, 405);
+  t.equal(out.message, 'Method Not Allowed');
+  t.teardown(() => closeServer(server));
+  t.end();
+});
+
 tap.test('nxa text return', async (t) => {
   const server = await getServer(
     nxa({
@@ -45,17 +60,17 @@ tap.test('nxa text return', async (t) => {
 tap.test('nxa middlewares', async (t) => {
   const afterResponse = sinon.spy();
   const beforeResponse = sinon.spy();
-  const all = sinon.spy(() => 'handler');
+  const controller = sinon.spy(() => 'handler');
   const server = await getServer(
     nxa({
-      all,
+      controller,
       beforeResponse: [beforeResponse],
       afterResponse: afterResponse,
     })
   );
   const url = `http://localhost:${(server.address() as any).port}`;
   await request(url);
-  t.ok(all.calledOnce);
+  t.ok(controller.calledOnce);
   t.ok(beforeResponse.calledOnce);
   t.ok(afterResponse.calledOnce);
   t.teardown(() => closeServer(server));
@@ -98,7 +113,7 @@ tap.test('nxa custom error handler', async (t) => {
 tap.test('nxa default handler async', async (t) => {
   const server = await getServer(
     nxa({
-      all: async () => 'handler',
+      controller: async () => 'handler',
     })
   );
   const url = `http://localhost:${(server.address() as any).port}`;
@@ -111,7 +126,7 @@ tap.test('nxa default handler async', async (t) => {
 tap.test('nxa beforeResponse', async (t) => {
   const server = await getServer(
     nxa({
-      all: () => 'handler',
+      controller: () => 'handler',
       beforeResponse: [() => 'OK'],
     })
   );
@@ -125,7 +140,7 @@ tap.test('nxa beforeResponse', async (t) => {
 tap.test('nxa beforeResponse async', async (t) => {
   const server = await getServer(
     nxa({
-      all: () => 'handler',
+      controller: () => 'handler',
       beforeResponse: [async () => 'OK'],
     })
   );
@@ -139,7 +154,7 @@ tap.test('nxa beforeResponse async', async (t) => {
 tap.test('nxa afterResponse async', async (t) => {
   const server = await getServer(
     nxa({
-      all: () => 'handler',
+      controller: () => 'handler',
       afterResponse: async () => {},
     })
   );

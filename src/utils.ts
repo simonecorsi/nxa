@@ -19,7 +19,11 @@ export function sendResponse(res: NextApiResponse, data: any) {
 }
 
 export function canSend(res: NextApiResponse, data: any) {
-  return Boolean(data && !res.writableEnded);
+  return Boolean(data && !isResEnded(res));
+}
+
+export function isResEnded(res: NextApiResponse) {
+  return res.writableEnded;
 }
 
 export async function onErrorHandler(
@@ -32,11 +36,9 @@ export async function onErrorHandler(
   if (!res.writableEnded) {
     const statusCode = (error as any)?.statusCode || 500;
     res.statusCode = statusCode;
-    return res.json(
-      JSON.stringify({
-        statusCode: statusCode,
-        message: error.message,
-      })
-    );
+    res.json({
+      statusCode: statusCode,
+      message: error.message,
+    });
   }
 }

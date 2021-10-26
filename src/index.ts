@@ -1,21 +1,22 @@
-import { ApiError } from './utils';
+import { ApiError, isResEnded } from './utils';
 import { NamedHandlers, nxaOptions, SUPPORTED_METHODS } from './types';
 import { sendResponse, canSend, onErrorHandler } from './utils';
 
-export default function nxa(options: nxaOptions) {
-  const { beforeResponse, afterResponse, onError } = Object.assign(
-    {
-      beforeResponse: [],
-      afterResponse: () => {},
-      onError: onErrorHandler,
-    },
-    options
-  );
+/* istanbul ignore next */
+export { ApiError } from './utils';
+
+export default function nxa(options: nxaOptions = {}) {
+  const { beforeResponse, afterResponse, onError } = {
+    beforeResponse: [],
+    afterResponse: () => {},
+    onError: onErrorHandler,
+    ...options,
+  };
 
   const handlers: NamedHandlers = {};
 
-  if (options.all) {
-    handlers.all = options.all;
+  if (options.controller) {
+    handlers.controller = options.controller;
   } else {
     for (const [key, v] of Object.entries(options)) {
       if (
@@ -31,25 +32,30 @@ export default function nxa(options: nxaOptions) {
     throw new TypeError('NextApiHandler: callback not defined!');
   }
 
+  const selfSupportedMethods = Object.keys(handlers);
   return async (req, res) => {
     try {
-      if (handlers[req.method.toLowerCase()] && handlers.all) {
-        throw new ApiError(405, 'Method Not Allowed');
+      // if named function provided, and no catch-all method
+      // checks if current method is supported by this handler
+      if (!handlers.controller && selfSupportedMethods.length) {
+        if (!selfSupportedMethods.includes(req.method.toLowerCase())) {
+          throw new ApiError(405, 'Method Not Allowed');
+        }
       }
 
-      const handler = handlers[req.method.toLowerCase()] || handlers.all;
+      const handler = handlers[req.method.toLowerCase()] || handlers.controller;
 
       // beforeResponse hooks
       for (const fn of beforeResponse) {
-        let out = fn(req, res);
+        let out = fn.call(options, req, res);
         if (out?.then) {
           out = await out;
         }
         if (canSend(res, out)) sendResponse(res, out);
       }
 
-      if (!res.writableEnded) {
-        let out = handler(req, res);
+      if (!isResEnded(res)) {
+        let out = handler.call(options, req, res);
         if (out?.then) {
           out = await out;
         }
@@ -59,23 +65,25 @@ export default function nxa(options: nxaOptions) {
       res.on('finish', () => {
         // afterResponse hooks
         if (typeof afterResponse === 'function') {
-          const result = afterResponse(req, res);
+          const result = afterResponse.call(options, req, res);
           if (result?.then) {
             result.catch(console.error);
           }
         }
       });
     } catch (error) {
-      const result = onError(req, res, error);
+      const result = onError.call(options, req, res, error);
       if (result?.then) {
         result
           .then((out) => {
             if (canSend(res, out)) sendResponse(res, out);
           })
+
+          // handler syntax errors for better debugging
           .catch(
-            // handler syntax errors for better debugging
+            /* istanbul ignore next */
             (error: Error) =>
-              !res.writableEnded &&
+              !isResEnded(res) &&
               res.json({
                 statusCode: 500,
                 message: error.message,
