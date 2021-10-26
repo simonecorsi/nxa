@@ -1,10 +1,9 @@
 <p align="center">
-    <img src="https://cdn.githubraw.com/simonecorsi/nxa/master/logo.png" alt="NxA" width="150px"/>
+    <img src="https://github.com/simonecorsi/nxa/blob/a54c3c6fb18a16aca64da7cc9f9b4b0decb8fa1f/logo.png" alt="NxA" width="150px"/>
 </p>
 
 <h1 align="center">NxA</h1>
 <p align="center">Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate 🦄</p>
-
 
 <!-- toc -->
 
