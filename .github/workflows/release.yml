@@ -33,9 +33,6 @@ jobs:
 
       - name: Semantic release
         uses: codfish/semantic-release-action@v1
-        with:
-          plugins: |
-            ['@semantic-release/github']
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.npm_token }}
