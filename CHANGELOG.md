@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/simonecorsi/nxa/compare/v1.0.5...v1.0.6) (2021-10-26)
+
+
+### Bug Fixes
+
+* cleanup ([03dd690](https://github.com/simonecorsi/nxa/commit/03dd69044b036fbd4fa7f86219b3721796e70307))
+
 ## [1.0.5](https://github.com/simonecorsi/nxa/compare/v1.0.4...v1.0.5) (2021-10-26)
 
 
