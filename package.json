@@ -1,6 +1,6 @@
 {
   "name": "nxa",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Minimalistc, zero dependencies and configurable Next.js API handler with hook support that avoids pointless boilerplate",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
