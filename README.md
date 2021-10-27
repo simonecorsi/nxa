@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">NxA</h1>
-<p align="center">Simple and configurable Next.js API handler wrapper that avoids pointless boilerplate 🦄</p>
+<p align="center">Minimalistc, zero dependencies and configurable Next.js API handler with hook support that avoids pointless boilerplate 🦄</p>
 
 > This projects was used in my project before Next.js 12 added support for middlewares, I'll leave this here just for fun now 😂
 
