@@ -11,6 +11,7 @@
               "assets": ["CHANGELOG.md", "package.json"]
           }
       ],
-      "@semantic-release/github"
+      "@semantic-release/github",
+      "@saithodev/semantic-release-backmerge"
   ]
 }
