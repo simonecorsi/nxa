@@ -111,8 +111,6 @@ export default nxa({
 
 ## Contributing
 
-Project is pretty simple and straight forward for what is my needs, but if you have any idea you're welcome.
-
 This projects uses [commitizen](https://github.com/commitizen/cz-cli) so be sure to use standard commit format or PR won't be accepted
 
 1. Fork the Project
