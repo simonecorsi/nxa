@@ -111,7 +111,9 @@ export default nxa({
 
 ## Contributing
 
-This projects uses [commitizen](https://github.com/commitizen/cz-cli) so be sure to use standard commit format or PR won't be accepted
+Project is pretty simple and straight forward for what is my needs, but if you have any idea you're welcome!
+
+This projects uses [Conventional Commits](https://www.conventionalcommits.org/) so be sure to use standard commit format or PR won't be accepted
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

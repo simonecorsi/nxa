@@ -72,6 +72,10 @@ export default function nxa(options: nxaOptions = {}) {
         }
       });
     } catch (error) {
+      if (error?.statusCode === 405) {
+        res.setHeader('Allow', selfSupportedMethods.join(', ').toUpperCase());
+      }
+
       const result = onError.call(options, req, res, error);
       if (result?.then) {
         result

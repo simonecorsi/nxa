@@ -6,6 +6,7 @@ import nxa from '../src/index';
 import { sendResponse, ApiError } from '../src/utils';
 import { getServer, closeServer } from './fixtures/server';
 import request from './fixtures/http';
+import http from 'http';
 
 tap.test('ApiError', (t) => {
   t.throws(() => {
@@ -37,10 +38,16 @@ tap.test('nxa throw 405 method not allowed', async (t) => {
     })
   );
   const url = `http://localhost:${(server.address() as any).port}`;
-  const response = await request(url);
-  const out = JSON.parse(response as string);
-  t.equal(out.statusCode, 405);
-  t.equal(out.message, 'Method Not Allowed');
+  const { headers, statusCode } = await new Promise((resolve, reject) =>
+    http
+      .request(url, (res) => {
+        res.on('error', reject);
+        resolve(res as any);
+      })
+      .end()
+  );
+  t.equal(headers.allow, 'POST');
+  t.equal(statusCode, 405);
   t.teardown(() => closeServer(server));
   t.end();
 });
